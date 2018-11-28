@@ -1,0 +1,274 @@
+use Libraries.Game.Game
+use Libraries.Game.Graphics.Drawable
+use Libraries.Game.InputSet
+use Libraries.Game.InputTable
+use Libraries.Interface.Events.KeyboardEvent
+use Libraries.Interface.Events.MouseEvent
+use Libraries.Game.InputMonitor
+use Libraries.System.SystemHelper 
+use Libraries.Compute.Random
+class Main is Game
+InputMonitor inputmonitor
+FocusDrawable background 
+FocusDrawable character 
+FocusDrawable character2
+FocusDrawable character3
+FocusDrawable character4
+FocusDrawable character5
+FocusDrawable character6
+FocusDrawable player
+FocusDrawable playerPunch 
+text name = ""
+SystemHelper help 
+MouseEvent mouseButtons
+InputMonitor monitor
+public number selection = 0
+KeyboardEvent keys 
+KeyboardEvent keyboard
+Random random
+FocusDrawable enemy
+text enemyName = ""
+    action Main
+        UseDesktopResolution(true)
+        StartGame()
+    end
+
+    action CreateGame
+        character:Load("assets/ace.jpg")
+        character:SetPosition(0,0)
+        character:SetWidth(400) 
+        character:SetHeight(400)
+       character:SetFocusable(true)
+
+    
+        character2:Load("assets/goku.png")
+        character2:SetPosition(400,0)
+        character2:SetWidth(550) 
+        character2:SetHeight(400)
+        character2:SetFocusable(true)
+      
+        character3:Load("assets/allmight.jpg")
+        character3:SetPosition(950,0)
+        character3:SetWidth(450) 
+        character3:SetHeight(400)
+        character3:SetFocusable(true)
+        
+       character4:Load("assets/gohan.jpg")
+        character4:SetPosition(0,400)
+        character4:SetWidth(400) 
+        character4:SetHeight(400)
+        character4:SetFocusable(true)
+       
+       character5:Load("assets/deku.jpg")
+        character5:SetPosition(400,400)
+        character5:SetWidth(500) 
+        character5:SetHeight(400)
+        character5:SetFocusable(true)
+      
+        character6:Load("assets/luffy.jpg")
+        character6:SetPosition(900,400)
+        character6:SetWidth(500) 
+        character6:SetHeight(400)
+        character6:SetFocusable(true)
+
+        character:SetNextFocus(character2)
+        character:SetPreviousFocus(character6)
+        character2:SetNextFocus(character3)
+        character2:SetPreviousFocus(character)
+        character3:SetNextFocus(character4)
+        character3:SetPreviousFocus(character2)
+        character4:SetNextFocus(character5)
+        character4:SetPreviousFocus(character3)
+        character5:SetNextFocus(character6)
+        character5:SetPreviousFocus(character4)
+        character6:SetNextFocus(character)
+        character6:SetPreviousFocus(character5)
+character:SetName("ace")
+character2:SetName("goku")
+character3:SetName("allmight")
+  character4:SetName("gohan")
+  character5:SetName("deku")
+character6:SetName("Luffy")
+           Add(character)
+           Add(character2)
+           Add(character3)
+           Add(character4)
+           Add(character5)
+           Add(character6)
+           character:Focus()
+        character:SetInputGroup("ace")
+        character2:SetInputGroup("goku")
+        character3:SetInputGroup("allmight")
+        character4:SetInputGroup("gohan")
+        character5:SetInputGroup("deku")
+        character6:SetInputGroup("luffy")
+        InputTable aceTable
+        InputTable allmightTable
+        InputTable gokuTable
+        InputTable gohanTable
+        InputTable dekuTable 
+        InputTable luffyTable
+     aceTable:SetIdentifier("ace")
+     allmightTable:SetIdentifier("allmight")
+     gokuTable:SetIdentifier("goku")
+     gohanTable:SetIdentifier("gohan")
+     dekuTable:SetIdentifier("deku")
+     luffyTable:SetIdentifier("luffy")
+     
+     InputSet EnterSet
+     EnterSet:SetKeyboardInput(keyboard:ENTER)
+     SelectBehavior selectAceBehavior
+    SelectBehavior selectGokuBehavior
+    SelectBehavior selectAllmightBehavior
+    SelectBehavior selectDekuBehavior
+    SelectBehavior selectGohanBehavior
+    SelectBehavior selectLuffyBehavior
+    selectAceBehavior:SetSelected("Ace")
+    selectGokuBehavior:SetSelected("Goku")
+    selectAllmightBehavior:SetSelected("Allmight")
+    selectGohanBehavior:SetSelected("Gohan")
+    selectLuffyBehavior:SetSelected("Luffy")
+    selectDekuBehavior:SetSelected("Deku")
+     aceTable:Add(EnterSet, selectAceBehavior)
+    gokuTable:Add(EnterSet, selectGokuBehavior)
+    allmightTable:Add(EnterSet, selectAllmightBehavior)
+    gohanTable:Add(EnterSet, selectGohanBehavior)
+    dekuTable:Add(EnterSet, selectDekuBehavior)
+    luffyTable:Add(EnterSet, selectLuffyBehavior)
+
+     AddInputTable(aceTable)
+     AddInputTable(gokuTable)
+   AddInputTable(allmightTable)
+   AddInputTable(gohanTable)
+   AddInputTable(dekuTable)
+    AddInputTable(luffyTable)
+
+ end
+
+    action SetUp 
+        character:Hide()
+        character2:Hide()
+        character3:Hide()
+        character4:Hide()
+        character5:Hide()
+        character6:Hide()
+      
+        background:Load("assets/background.jpg")
+        Add(background)
+        background:SetPosition(0,0)
+        background:SetHeight(800)
+        background:SetWidth(1400)
+        background:Show()
+
+        if selection = 1 
+            player:Load("assets/AceStillSprite.png")
+            name = "Ace" 
+        elseif selection = 2
+            player:Load("assets/GokuStillSprite.png")
+            name = "Goku" 
+        elseif selection = 3
+            player:Load("assets/AllMightStillSprite.png") 
+            name = "AllMight" 
+        elseif selection = 4
+            player:Load("assets/GohanStillSprite.png")
+            name = "Gohan" 
+        elseif selection = 5 
+            player:Load("assets/DekuStillSprite.png")
+            name = "Deku"
+        else
+            player:Load("assets/LuffyStillSprite.png")
+            name = "Luffy" 
+        end
+        Add(player)
+        player:SetPosition(200,100)
+        player:SetHeight(300)
+        player:SetWidth(150)
+        player:Show()
+
+        number r = random:RandomIntegerBetween(0,6) 
+        if r < 1 
+            enemy:Load("assets/AceStillSprite.png") 
+            enemyName = "Ace" 
+        elseif r < 2 
+            enemy:Load("assets/GokuStillSprite.png")
+            enemyName = "Goku"
+        elseif r < 3 
+            enemy:Load("assets/AllMightStillSprite.png") 
+            enemyName = "AllMight"
+        elseif r < 4 
+            enemy:Load("assets/GohanStillSprite.png") 
+            enemyName = "Gohan"
+        elseif r < 5 
+            enemy:Load("assets/DekuStillSprite.png") 
+            enemyName = "Dekue"
+        else 
+            enemy:Load("assets/LuffyStillSprite.png") 
+            enemyName = "Luffy"
+        end
+        Add(enemy)
+        enemy:SetPosition(900,100)
+        enemy:SetHeight(300)
+        enemy:SetWidth(150)
+        enemy:FlipX()
+        enemy:Show()
+  end 
+
+    action ShowPunch 
+        player:Hide()
+        playerPunch:Show()
+    end 
+
+    action HidePunch
+        playerPunch:Hide()
+        player:Show()
+    end
+
+    action Update(number seconds)
+        if inputmonitor:IsKeyPressed(keyboard:D) 
+            Exit()
+        end
+        if monitor:IsMouseButtonPressed(mouseButtons:LEFT)
+            integer x = monitor:GetMouseX()
+            integer y = monitor:GetMouseY()
+            if y >= 400
+                if x <= 400
+                    selection = 1
+                elseif x <= 950
+                    selection = 2
+                else
+                    selection = 3
+                end
+            else
+                if x <= 400 
+                    selection = 4 
+                elseif x <= 800
+                    selection = 5 
+                else 
+                    selection = 6 
+                end
+            end
+            SetUp()
+        end 
+        x = player:GetX()
+        y = player:GetY()
+        if monitor:IsKeyPressed(keys:RIGHT)
+            if x < 1000
+                player:MoveX(10) 
+            end 
+        elseif monitor:IsKeyPressed(keys:LEFT) 
+            if x > 100 
+                player:MoveX(-10) 
+            end 
+        end
+        if monitor:IsKeyPressed(keys:SPACE)
+            playerPunch:Load("assets/" + name + "PunchSprite.png")   
+            Add(playerPunch)
+            playerPunch:SetPosition(x,y)
+            playerPunch:SetHeight(300)
+            playerPunch:SetWidth(300)
+            ShowPunch()
+        else 
+            HidePunch()  
+        end 
+    end
+end

@@ -1,0 +1,16 @@
+use Libraries.Interface.Behaviors.Behavior
+use Libraries.Interface.Events.BehaviorEvent
+use Libraries.Sound.Speech
+
+
+class SelectBehavior is Behavior
+ text selected = undefined
+   
+    action Run(BehaviorEvent event)
+   Speech speech 
+   speech:Say("you selected "+selected)
+    end
+action SetSelected(text NewSelected)
+selected = NewSelected
+end
+end

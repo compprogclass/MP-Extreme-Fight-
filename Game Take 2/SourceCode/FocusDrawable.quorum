@@ -1,0 +1,14 @@
+use Libraries.Game.Graphics.Drawable
+use Libraries.Sound.Speech
+use Libraries.Interface.Events.FocusEvent
+
+class FocusDrawable is Drawable 
+    text name = undefined
+action SetName(text newName)
+name = newName
+end
+    action GainedFocus(FocusEvent event)
+        Speech speech
+        speech:Say(name)
+    end
+end
