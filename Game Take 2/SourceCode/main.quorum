@@ -7,7 +7,13 @@ use Libraries.Interface.Events.MouseEvent
 use Libraries.Game.InputMonitor
 use Libraries.System.SystemHelper 
 use Libraries.Compute.Random
-class Main is Game
+use Libraries.Interface.Events.CollisionEvent2D
+use Libraries.Interface.Events.CollisionListener2D
+use Libraries.Game.Graphics.Label
+use Libraries.Game.Graphics.Color
+
+class Main is Game, CollisionListener2D 
+ number counter = 0
 InputMonitor inputmonitor
 FocusDrawable background 
 FocusDrawable character 
@@ -25,23 +31,27 @@ InputMonitor monitor
 public number selection = 0
 KeyboardEvent keys 
 KeyboardEvent keyboard
-Random random
+Label label 
+Random random 
 FocusDrawable enemy
 text enemyName = ""
+Drawable cube
+Drawable cube2  
+Color color
+ number hp = 0
     action Main
         UseDesktopResolution(true)
         StartGame()
     end
 
     action CreateGame
+    
         character:Load("assets/ace.jpg")
         character:SetPosition(0,0)
         character:SetWidth(400) 
         character:SetHeight(400)
        character:SetFocusable(true)
-
-    
-        character2:Load("assets/goku.png")
+         character2:Load("assets/goku.png")
         character2:SetPosition(400,0)
         character2:SetWidth(550) 
         character2:SetHeight(400)
@@ -142,7 +152,7 @@ character6:SetName("Luffy")
    AddInputTable(gohanTable)
    AddInputTable(dekuTable)
     AddInputTable(luffyTable)
-
+        AddCollisionListener(me)
  end
 
     action SetUp 
@@ -152,7 +162,6 @@ character6:SetName("Luffy")
         character4:Hide()
         character5:Hide()
         character6:Hide()
-      
         background:Load("assets/background.jpg")
         Add(background)
         background:SetPosition(0,0)
@@ -160,22 +169,43 @@ character6:SetName("Luffy")
         background:SetWidth(1400)
         background:Show()
 
-        if selection = 1 
+        if selection = 1
+            cube:LoadFilledRectangle(370,40,color:Blue())  
+            Add(cube)
+            cube:SetPosition(100,700)
             player:Load("assets/AceStillSprite.png")
             name = "Ace" 
         elseif selection = 2
+        cube:LoadFilledRectangle(370,40,color:Blue())
+        cube:SetPosition(100,700)
+        Add(cube) 
             player:Load("assets/GokuStillSprite.png")
             name = "Goku" 
         elseif selection = 3
+        cube:LoadFilledRectangle(370,40,color:Blue())
+        cube:SetPosition(100,700)
+        Add(cube) 
             player:Load("assets/AllMightStillSprite.png") 
             name = "AllMight" 
         elseif selection = 4
+        cube:LoadFilledRectangle(370,40,color:Blue())
+        cube:SetPosition(100,700)
+        Add(cube) 
             player:Load("assets/GohanStillSprite.png")
             name = "Gohan" 
         elseif selection = 5 
+        cube:LoadFilledRectangle(370,40,color:Blue())
+        cube:SetPosition(100,700)
+        Add(cube) 
             player:Load("assets/DekuStillSprite.png")
             name = "Deku"
+            cube:LoadFilledRectangle(370,40,color:Blue())
+            cube:SetPosition(100,700)
+            Add(cube) 
         else
+        cube:LoadFilledRectangle(370,40,color:Blue())
+        cube:SetPosition(100,700)
+        Add(cube) 
             player:Load("assets/LuffyStillSprite.png")
             name = "Luffy" 
         end
@@ -184,35 +214,53 @@ character6:SetName("Luffy")
         player:SetHeight(300)
         player:SetWidth(150)
         player:Show()
+        
+        label:SetText("FIGHT")
+        label:SetPosition(515,300)
+        label:SetSize(55)
+        Add(label)     
+        number r = random:RandomIntegerBetween(0,6)
+      if r < 1
+      cube2:LoadFilledRectangle(370,40,color:Red())
+      Add(cube2)
+      cube2:SetPosition(800,700)
 
-        number r = random:RandomIntegerBetween(0,6) 
-        if r < 1 
-            enemy:Load("assets/AceStillSprite.png") 
-            enemyName = "Ace" 
-        elseif r < 2 
+        enemy:Load("assets/AceStillSprite.png")
+        enemyName = "Ace"
+        elseif r < 2
+        cube2:LoadFilledRectangle(370,40,color:Red())
+        Add(cube2)
+        cube:SetPosition(800,700)
             enemy:Load("assets/GokuStillSprite.png")
             enemyName = "Goku"
-        elseif r < 3 
+        elseif r < 3
+        cube2:LoadFilledRectangle(370,40,color:Red())
+        Add(cube2)
             enemy:Load("assets/AllMightStillSprite.png") 
             enemyName = "AllMight"
-        elseif r < 4 
-            enemy:Load("assets/GohanStillSprite.png") 
-            enemyName = "Gohan"
-        elseif r < 5 
+        elseif r < 4
+        cube2:LoadFilledRectangle(370,40,color:Red()) 
+        Add(cube2) 
+            enemy:Load("assets/GohanStillSprite.png")             enemyName = "Gohan"
+        elseif r < 5
+          cube2:LoadFilledRectangle(370,40,color:Red())
+          Add(cube2) 
             enemy:Load("assets/DekuStillSprite.png") 
             enemyName = "Dekue"
         else 
-            enemy:Load("assets/LuffyStillSprite.png") 
+          cube2:LoadFilledRectangle(370,40,color:Red()) 
+          Add(cube2) 
+            enemy:Load("assets/LuffyStillSprite.png")
             enemyName = "Luffy"
-        end
+            end  
         Add(enemy)
+        enemy:SetCollidable(true)
         enemy:SetPosition(900,100)
         enemy:SetHeight(300)
         enemy:SetWidth(150)
         enemy:FlipX()
         enemy:Show()
   end 
-
     action ShowPunch 
         player:Hide()
         playerPunch:Show()
@@ -227,6 +275,12 @@ character6:SetName("Luffy")
         if inputmonitor:IsKeyPressed(keyboard:D) 
             Exit()
         end
+        counter = counter + seconds
+        
+        if counter > 5 and background:IsShowing() = true
+            label:Hide()
+        end
+
         if monitor:IsMouseButtonPressed(mouseButtons:LEFT)
             integer x = monitor:GetMouseX()
             integer y = monitor:GetMouseY()
@@ -256,19 +310,31 @@ character6:SetName("Luffy")
                 player:MoveX(10) 
             end 
         elseif monitor:IsKeyPressed(keys:LEFT) 
-            if x > 100 
-                player:MoveX(-10) 
-            end 
+                if x > 100 
+                    player:MoveX(-10)
+                end
+                
         end
         if monitor:IsKeyPressed(keys:SPACE)
-            playerPunch:Load("assets/" + name + "PunchSprite.png")   
-            Add(playerPunch)
+        playerPunch:Load("assets/" + name + "PunchSprite.png")   
+        Add(playerPunch)
+            playerPunch:SetCollidable(true)
             playerPunch:SetPosition(x,y)
             playerPunch:SetHeight(300)
             playerPunch:SetWidth(300)
             ShowPunch()
+            
         else 
             HidePunch()  
         end 
+    end
+    action BeginCollision (CollisionEvent2D event)
+
+        
+    end
+    action FinishCollision (CollisionEvent2D event)
+        hp = hp -1
+        output hp 
+        say hp 
     end
 end
